@@ -23,3 +23,9 @@ Thumbs.db
 dist/
 lib/
 *.tsbuildinfo
+
+# Shipping the artwork is load-bearing: `npm pack` and `pnpm pack` honour this
+# file, and an ignore rule that swallows Assets/ silently produces an art-less
+# tarball. Keep these negations last.
+!Assets/
+!Assets/**

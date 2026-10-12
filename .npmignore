@@ -1,0 +1,8 @@
+# `npm pack` / `pnpm pack` ignore rules.
+#
+# This file exists so packing does NOT fall back to .gitignore, whose patterns can
+# silently drop the artwork (an art-less tarball still installs, it just renders a
+# blank pet). Only genuinely local files are excluded here.
+tools/
+node_modules/
+*.log

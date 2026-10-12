@@ -16,11 +16,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/<your-name>/dsh-fritia-pet.git"
+    "url": "git+https://github.com/dzy1571315598/dsh-fritia-pet.git"
   },
-  "homepage": "https://github.com/<your-name>/dsh-fritia-pet#readme",
+  "homepage": "https://github.com/dzy1571315598/dsh-fritia-pet#readme",
   "bugs": {
-    "url": "https://github.com/<your-name>/dsh-fritia-pet/issues"
+    "url": "https://github.com/dzy1571315598/dsh-fritia-pet/issues"
   },
   "type": "module",
   "meta": {
@@ -36,7 +36,7 @@
     "index.js",
     "client.js",
     "cordis.patch.yml",
-    "sprites",
+    "Assets",
     "screenshots.json",
     "LICENSE",
     "README.md"
