@@ -300,11 +300,41 @@ if (host === 'github') {
     console.log(`  ${String(Math.round(blobs.at(-1).bytes / 1024)).padStart(5)} KB  ${file.path}`)
   }
 
+  // `base_tree` MERGES: paths omitted from the new tree survive from the base. A
+  // renamed folder would therefore live on forever, so every path that exists
+  // remotely but not locally is explicitly deleted (sha: null).
+  const deletions = []
+  if (baseTree !== undefined) {
+    try {
+      const current = await api(`/repos/${owner}/${repoName}/git/trees/${baseTree}?recursive=1`)
+      const wanted = new Set(files.map((file) => file.path))
+      const keptDirs = new Set()
+      for (const file of files) {
+        const parts = file.path.split('/')
+        for (let i = 1; i < parts.length; i += 1) keptDirs.add(parts.slice(0, i).join('/'))
+      }
+      for (const entry of current.tree ?? []) {
+        if (entry.type !== 'blob') continue
+        if (wanted.has(entry.path) || keptDirs.has(entry.path)) continue
+        deletions.push({ path: entry.path, mode: '100644', type: 'blob', sha: null })
+      }
+    } catch (error) {
+      console.warn(`  (could not list the current tree to prune: ${error.message})`)
+    }
+  }
+  if (deletions.length > 0) {
+    console.log(`pruning ${deletions.length} path(s) that no longer exist locally:`)
+    for (const entry of deletions) console.log(`  delete  ${entry.path}`)
+  }
+
   const tree = await api(`/repos/${owner}/${repoName}/git/trees`, {
     method: 'POST',
     body: {
       ...(baseTree === undefined ? {} : { base_tree: baseTree }),
-      tree: blobs.map((b) => ({ path: b.path, mode: '100644', type: 'blob', sha: b.sha })),
+      tree: [
+        ...blobs.map((b) => ({ path: b.path, mode: '100644', type: 'blob', sha: b.sha })),
+        ...deletions,
+      ],
     },
   })
   const commit = await api(`/repos/${owner}/${repoName}/git/commits`, {
