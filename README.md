@@ -8,8 +8,8 @@
 |---|---|
 | `index.js` | Host 半：把 `sprites/` 里的立绘以 HTTP 提供给浏览器，并把 `agent/status` 的忙碌状态暴露成 JSON |
 | `client.js` | 浏览器半：状态机 + 渲染，注册到 `shell.overlay` |
-| `sprites/` | 20 张 256×256 透明立绘（`../img` 的处理产物） |
-| `assets/`、`screenshots.json` | 市场展示用的截图（1–8 张，相对路径） |
+| `sprites/` | 20 张 256×256 透明立绘 + 2 张市场截图（`../img` 的处理产物） |
+| `screenshots.json` | 市场展示用截图清单（相对路径，1–8 张） |
 | `cordis.patch.yml` | 装载入口行 |
 | `tools/` | 本地自检脚本（`verify-pose` / `verify-host` / `verify-client`，不随插件运行） |
 

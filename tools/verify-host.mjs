@@ -9,6 +9,7 @@
  */
 import { createServer } from 'node:http'
 import { pathToFileURL } from 'node:url'
+import { existsSync } from 'node:fs'
 import path from 'node:path'
 
 const petUrl = pathToFileURL(path.resolve('D:/DeepseekHarness/FritiaPlugin/FritiaPet/index.js')).href
@@ -128,7 +129,9 @@ for (const [label, route] of checks) {
 
 // Every artwork file the client asks for must resolve.
 const { readFile } = await import('node:fs/promises')
-const assetDir = 'D:/DeepseekHarness/FritiaPlugin/FritiaPet/sprites'
+const assetDir = ['D:/DeepseekHarness/FritiaPlugin/FritiaPet/sprites',
+  'D:/DeepseekHarness/FritiaPlugin/FritiaPet/Assets']
+  .find((candidate) => existsSync(candidate))
 const files = (await (await import('node:fs/promises')).readdir(assetDir)).filter((f) => f.endsWith('.png'))
 let missing = 0
 for (const file of files) {

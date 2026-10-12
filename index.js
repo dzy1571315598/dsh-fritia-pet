@@ -12,6 +12,7 @@
  * balance through the generated Remote namespace.
  */
 import { readFile, readdir } from 'node:fs/promises'
+import { existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 
@@ -35,8 +36,7 @@ export const Config = (() => {
     if (Schema?.object === undefined) return undefined
     return Schema.object({
       routePrefix: Schema.string().default('/fritia-pet'),
-      assetDir: Schema.string().default('sprites'),
-      walkingWindowMs: Schema.number().default(3000),
+      assetDir: Schema.string().default('sprites'),      walkingWindowMs: Schema.number().default(3000),
       reconcileMs: Schema.number().default(5000),
     })
   } catch {
@@ -59,7 +59,24 @@ const DEFAULTS = {
 export function apply(ctx, config) {
   const options = { ...DEFAULTS, ...(config ?? {}) }
   const prefix = options.routePrefix.startsWith('/') ? options.routePrefix : `/${options.routePrefix}`
-  const assetRoot = path.resolve(HERE, options.assetDir)
+  // Windows folds `Assets` and `assets` into one folder, so an explicit assetDir
+  // and a renamed checkout can disagree while both "exist". Probe the candidates
+  // once and serve whichever really holds the artwork.
+  const assetRoot = (() => {
+    const candidates = [
+      path.resolve(HERE, options.assetDir),
+      path.resolve(HERE, 'sprites'),
+      path.resolve(HERE, 'Assets'),
+    ]
+    for (const candidate of candidates) {
+      try {
+        if (existsSync(candidate)) return candidate
+      } catch {
+        /* fall through to the next candidate */
+      }
+    }
+    return candidates[0]
+  })()
 
   // ---------------------------------------------------------------- work state
   // Per-agent status map instead of a counter: a duplicated or dropped notification
@@ -195,8 +212,11 @@ export function apply(ctx, config) {
       path: `${prefix}/health`,
       handler: async (req, res) => {
         const names = await assetNames()
-        const probe = names.includes('待机1.png') ? '待机1.png' : names[0]
-        let artwork = { file: probe, status: 'no-assets' }
+        // Probe a real animation sprite, not a screenshot: "artwork ok" must mean
+        // the pet can actually render.
+        const preferred = ['待机1.png', '待机2.png', '困.png']
+        const probe = preferred.find((name) => names.includes(name)) ?? names[0]
+        let artwork = { file: probe ?? null, status: 'no-assets' }
         if (probe !== undefined) {
           try {
             artwork = { file: probe, status: 'ok', bytes: (await readFile(path.join(assetRoot, probe))).length }
