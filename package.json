@@ -1,0 +1,58 @@
+{
+  "name": "@local/dsh-fritia-pet",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Fritia 桌宠：基于交互素材的 DeepSeek Harness Web 桌面宠物，右下角待机/走路/抓取/情绪/余额面板。",
+  "license": "MIT",
+  "author": "FritiaPet contributors",
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "cordis",
+    "plugin",
+    "desktop-pet",
+    "桌宠"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/<your-name>/dsh-fritia-pet.git"
+  },
+  "homepage": "https://github.com/<your-name>/dsh-fritia-pet#readme",
+  "bugs": {
+    "url": "https://github.com/<your-name>/dsh-fritia-pet/issues"
+  },
+  "type": "module",
+  "meta": {
+    "title": "Fritia 桌宠",
+    "description": "右下角的小人：待机、困/钓鱼、左走右走、抓取拖动、情绪反馈与余额面板。"
+  },
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "sprites",
+    "assets",
+    "screenshots.json",
+    "LICENSE",
+    "README.md"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-slots"
+      ]
+    },
+    "manifestVersion": 1
+  }
+}

@@ -1,0 +1,6 @@
+# Bundle patch: the row loads this package's main entry as the Host half; the
+# package's `dsh.client` declaration makes the Web app load ./client.js as the
+# browser half.
+- insert:
+    - id: dsh-fritia-pet
+      name: '@local/dsh-fritia-pet'
